@@ -44,16 +44,18 @@ loom {
 	}
 }
 
-// Add the generated resources to the main source set
-sourceSets {
-	main {
-		resources {
-			srcDirs += [
-					'src/main/generated'
-			]
-		}
-	}
-}
+//// Add the generated resources to the main source set
+//sourceSets {
+//	main {
+//		resources {
+//			srcDirs += [
+//					'src/main/generated'
+//			]
+//		}
+//	}
+//}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 configurations {
 	shade
@@ -70,8 +72,11 @@ dependencies {
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	shade 'com.google.guava:guava:32.1.1-jre'
+
 	shade 'com.github.SNWCreations:Kookbc:0.27.2',{
-		exclude group: 'net.fabricmc' ,module: 'sponge-mixin'
+		exclude group: 'net.fabricmc' , module: 'sponge-mixin'
+		exclude group: 'com.google.guava:guava' , module: '32.1.1-jre'
 	}
 	shade 'cn.hutool:hutool-all:5.8.20'
 }
@@ -110,6 +115,7 @@ jar {
 shadowJar {
 	archiveClassifier = ''
 	configurations = [project.configurations.shade]
+	relocate('snw.kookbc','net.flandre923.snw.kookbc')
 }
 
 assemble.dependsOn shadowJar
